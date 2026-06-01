@@ -15,23 +15,23 @@ public class LevelManager
 
     public void open(String level)
     {
-        if(!levels.containsKey(level))
+        if(!this.levels.containsKey(level))
         {
             return;
         }
 
-        if(activeLevel != null)
+        if(this.activeLevel != null)
         {
-            activeLevel.onUnloaded();
+            this.activeLevel.onUnloaded();
         }
 
-        activeLevel = levels.get(level);
-        activeLevel.onLoaded();
+        this.activeLevel = this.levels.get(level);
+        this.activeLevel.onLoaded();
     }
 
     public void load(Supplier<Level> level, String id)
     {
-        levels.put(id, level.get());
+        this.levels.put(id, level.get());
     }
 
     public void tick(float dt)
