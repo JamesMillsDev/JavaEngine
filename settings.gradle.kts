@@ -1,1 +1,4 @@
-rootProject.name = "JavaEngine"
+rootProject.name = "skittles"
+
+include("api")
+include("game")

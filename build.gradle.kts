@@ -2,40 +2,13 @@ import org.gradle.internal.os.OperatingSystem
 
 plugins {
     id("java")
-    id("application")
 }
-
-group = "net.skittles"
-version = "1.0-SNAPSHOT"
 
 val lwjglVersion = "3.3.4"
 val lwjglNatives = when {
     OperatingSystem.current().isWindows -> "natives-windows"
     OperatingSystem.current().isMacOsX  -> "natives-macos"
     else                                -> "natives-linux"
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
-
-    implementation("org.lwjgl", "lwjgl")
-    implementation("org.lwjgl", "lwjgl-glfw")
-    implementation("org.lwjgl", "lwjgl-opengl")
-    implementation("org.lwjgl", "lwjgl-stb")
-
-    runtimeOnly("org.lwjgl", "lwjgl",        classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-glfw",   classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-stb",    classifier = lwjglNatives)
-
-    implementation("org.yaml:snakeyaml:2.2")
-
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 val jvmArgs = buildList {
@@ -50,13 +23,46 @@ val jvmArgs = buildList {
     }
 }
 
-application {
-    mainClass.set("net.skittles.Main")
-    applicationDefaultJvmArgs = jvmArgs
-}
+// Must be set before subprojects/game build scripts read them
+extra["lwjglVersion"] = lwjglVersion
+extra["lwjglNatives"]  = lwjglNatives
+extra["jvmArgs"]       = jvmArgs
 
-tasks.test {
-    useJUnitPlatform()
+subprojects {
+    apply(plugin = "java")
+
+    group = "net.skittles"
+    version = "1.0-SNAPSHOT"
+
+    val lwjglVersion = rootProject.extra["lwjglVersion"] as String
+    val lwjglNatives = rootProject.extra["lwjglNatives"] as String
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        "implementation"(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
+
+        "implementation"("org.lwjgl:lwjgl")
+        "implementation"("org.lwjgl:lwjgl-glfw")
+        "implementation"("org.lwjgl:lwjgl-opengl")
+        "implementation"("org.lwjgl:lwjgl-stb")
+
+        "runtimeOnly"("org.lwjgl:lwjgl::$lwjglNatives")
+        "runtimeOnly"("org.lwjgl:lwjgl-glfw::$lwjglNatives")
+        "runtimeOnly"("org.lwjgl:lwjgl-opengl::$lwjglNatives")
+        "runtimeOnly"("org.lwjgl:lwjgl-stb::$lwjglNatives")
+
+        "implementation"("org.yaml:snakeyaml:2.2")
+
+        "testImplementation"(platform("org.junit:junit-bom:5.10.0"))
+        "testImplementation"("org.junit.jupiter:junit-jupiter")
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
 
 tasks.register("generateIdeaRunConfig") {
@@ -67,16 +73,16 @@ tasks.register("generateIdeaRunConfig") {
         val runConfigDir = file(".idea/runConfigurations")
         runConfigDir.mkdirs()
 
-        val mainClassName = application.mainClass.get()
+        val mainClassName = "net.skittles.Main"
         val jvmArgsString = jvmArgs.joinToString(" ")
 
         val xml = """
             <component name="ProjectRunConfigurationManager">
-              <configuration default="false" name="Run ${project.name}" type="Application" factoryName="Application">
+              <configuration default="false" name="Run game" type="Application" factoryName="Application">
                 <option name="MAIN_CLASS_NAME" value="$mainClassName" />
                 <option name="VM_PARAMETERS" value="$jvmArgsString" />
                 <option name="WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
-                <module name="${project.name}.main" />
+                <module name="game.main" />
                 <method v="2">
                   <option name="Make" enabled="true" />
                 </method>
@@ -84,33 +90,8 @@ tasks.register("generateIdeaRunConfig") {
             </component>
         """.trimIndent()
 
-        val configFile = file(".idea/runConfigurations/${project.name}.xml")
+        val configFile = file(".idea/runConfigurations/game.xml")
         configFile.writeText(xml)
         println("Run configuration written to: ${configFile.relativeTo(projectDir)}")
-    }
-}
-
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = application.mainClass.get()
-        attributes["Class-Path"] = configurations.runtimeClasspath.get()
-            .joinToString(" ") { it.name }
-    }
-}
-
-tasks.register<Copy>("copyDependencies") {
-    group = "build"
-    description = "Copies all runtime dependencies to build/libs"
-    from(configurations.runtimeClasspath)
-    into(layout.buildDirectory.dir("libs"))
-}
-
-tasks.register("buildExecutable") {
-    group = "build"
-    description = "Builds the jar and copies all dependencies to build/libs"
-    dependsOn(tasks.jar, "copyDependencies")
-
-    doLast {
-        println("Executable built to: ${layout.buildDirectory.dir("libs").get()}")
     }
 }
