@@ -138,6 +138,62 @@ public class Matrix4
         this.col4 = new Vector4(m30, m31, m32, m33);
     }
 
+    public void setRotationX(float radians)
+    {
+        float cos     = (float) Math.cos(radians);
+        float sin     = (float) Math.sin(radians);
+        Vector3 scale = getScale();
+        this.col2 = new Vector4(0.0F,  cos * scale.y(), sin * scale.y(), 0.0F);
+        this.col3 = new Vector4(0.0F, -sin * scale.z(), cos * scale.z(), 0.0F);
+    }
+
+    public void setRotationY(float radians)
+    {
+        float cos     = (float) Math.cos(radians);
+        float sin     = (float) Math.sin(radians);
+        Vector3 scale = getScale();
+        this.col1 = new Vector4( cos * scale.x(), 0.0F, -sin * scale.x(), 0.0F);
+        this.col3 = new Vector4( sin * scale.z(), 0.0F,  cos * scale.z(), 0.0F);
+    }
+
+    public void setRotationZ(float radians)
+    {
+        float cos     = (float) Math.cos(radians);
+        float sin     = (float) Math.sin(radians);
+        Vector3 scale = getScale();
+        this.col1 = new Vector4(cos * scale.x(),  sin * scale.x(), 0.0F, 0.0F);
+        this.col2 = new Vector4(-sin * scale.y(), cos * scale.y(), 0.0F, 0.0F);
+    }
+
+    public void setScale(float sx, float sy, float sz)
+    {
+        float lenX = new Vector3(this.col1.x(), this.col1.y(), this.col1.z()).magnitude();
+        float lenY = new Vector3(this.col2.x(), this.col2.y(), this.col2.z()).magnitude();
+        float lenZ = new Vector3(this.col3.x(), this.col3.y(), this.col3.z()).magnitude();
+        if (lenX != 0.0F) { this.col1 = new Vector4(this.col1.x() / lenX * sx, this.col1.y() / lenX * sx, this.col1.z() / lenX * sx, 0.0F); }
+        if (lenY != 0.0F) { this.col2 = new Vector4(this.col2.x() / lenY * sy, this.col2.y() / lenY * sy, this.col2.z() / lenY * sy, 0.0F); }
+        if (lenZ != 0.0F) { this.col3 = new Vector4(this.col3.x() / lenZ * sz, this.col3.y() / lenZ * sz, this.col3.z() / lenZ * sz, 0.0F); }
+    }
+
+    public void setTranslation(float tx, float ty, float tz)
+    {
+        this.col4 = new Vector4(tx, ty, tz, 1.0F);
+    }
+
+    public Vector3 getTranslation()
+    {
+        return new Vector3(this.col4.x(), this.col4.y(), this.col4.z());
+    }
+
+    public Vector3 getScale()
+    {
+        return new Vector3(
+                new Vector3(this.col1.x(), this.col1.y(), this.col1.z()).magnitude(),
+                new Vector3(this.col2.x(), this.col2.y(), this.col2.z()).magnitude(),
+                new Vector3(this.col3.x(), this.col3.y(), this.col3.z()).magnitude()
+        );
+    }
+
     public Vector4 getColumn(int index)
     {
         return switch (index)

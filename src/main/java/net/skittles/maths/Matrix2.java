@@ -39,6 +39,37 @@ public class Matrix2
         this.col2 = new Vector2(m10, m11);
     }
 
+    public void setRotation(float radians)
+    {
+        float cos = (float) Math.cos(radians);
+        float sin = (float) Math.sin(radians);
+        float scaleX = new Vector2(this.col1.x(), this.col1.y()).magnitude();
+        float scaleY = new Vector2(this.col2.x(), this.col2.y()).magnitude();
+        this.col1 = new Vector2(cos * scaleX,  sin * scaleX);
+        this.col2 = new Vector2(-sin * scaleY, cos * scaleY);
+    }
+
+    public void setScale(float sx, float sy)
+    {
+        float lenX = new Vector2(this.col1.x(), this.col1.y()).magnitude();
+        float lenY = new Vector2(this.col2.x(), this.col2.y()).magnitude();
+        if (lenX != 0.0F) { this.col1 = new Vector2(this.col1.x() / lenX * sx, this.col1.y() / lenX * sx); }
+        if (lenY != 0.0F) { this.col2 = new Vector2(this.col2.x() / lenY * sy, this.col2.y() / lenY * sy); }
+    }
+
+    public float getRotation()
+    {
+        return (float) Math.atan2(this.col1.y(), this.col1.x());
+    }
+
+    public Vector2 getScale()
+    {
+        return new Vector2(
+                new Vector2(this.col1.x(), this.col1.y()).magnitude(),
+                new Vector2(this.col2.x(), this.col2.y()).magnitude()
+        );
+    }
+
     public Vector2 getColumn(int index)
     {
         return switch (index)

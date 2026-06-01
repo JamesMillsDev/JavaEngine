@@ -1,4 +1,4 @@
-package net.skittles.core.utility;
+package net.skittles.utility;
 
 import java.util.ArrayList;
 

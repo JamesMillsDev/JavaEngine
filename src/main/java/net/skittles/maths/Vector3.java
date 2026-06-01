@@ -18,9 +18,7 @@ public class Vector3
 
     public Vector3()
     {
-        this.x = 0.0F;
-        this.y = 0.0F;
-        this.z = 0.0F;
+        this(0F, 0F, 0F);
     }
 
     public Vector3(float x, float y, float z)
@@ -28,6 +26,16 @@ public class Vector3
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public Vector3(Vector2 v)
+    {
+        this(v.x(), v.y(), 0.F);
+    }
+
+    public Vector3(Vector4 v)
+    {
+        this(v.x(), v.y(), v.z());
     }
 
     public float x()

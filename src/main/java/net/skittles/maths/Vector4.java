@@ -13,10 +13,7 @@ public class Vector4
 
     public Vector4()
     {
-        this.x = 0.0F;
-        this.y = 0.0F;
-        this.z = 0.0F;
-        this.w = 0.0F;
+        this(0F, 0F, 0F, 0F);
     }
 
     public Vector4(float x, float y, float z, float w)
@@ -25,6 +22,16 @@ public class Vector4
         this.y = y;
         this.z = z;
         this.w = w;
+    }
+
+    public Vector4(Vector2 v)
+    {
+        this(v.x(), v.y(), 0F, 0F);
+    }
+
+    public Vector4(Vector3 v)
+    {
+        this(v.x(), v.y(), v.z(), 0F);
     }
 
     public float x()

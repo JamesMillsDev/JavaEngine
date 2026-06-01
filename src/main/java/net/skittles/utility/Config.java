@@ -1,4 +1,4 @@
-package net.skittles.core.utility;
+package net.skittles.utility;
 
 import net.skittles.Main;
 import net.skittles.core.Engine;

@@ -82,6 +82,52 @@ public class Matrix3
         this.col3 = new Vector3(m20, m21, m22);
     }
 
+    public void setRotationX(float radians)
+    {
+        float cos    = (float) Math.cos(radians);
+        float sin    = (float) Math.sin(radians);
+        Vector3 scale = getScale();
+        this.col2 = new Vector3(0.0F,  cos * scale.y(), sin * scale.y());
+        this.col3 = new Vector3(0.0F, -sin * scale.z(), cos * scale.z());
+    }
+
+    public void setRotationY(float radians)
+    {
+        float cos     = (float) Math.cos(radians);
+        float sin     = (float) Math.sin(radians);
+        Vector3 scale = getScale();
+        this.col1 = new Vector3( cos * scale.x(), 0.0F, -sin * scale.x());
+        this.col3 = new Vector3( sin * scale.z(), 0.0F,  cos * scale.z());
+    }
+
+    public void setRotationZ(float radians)
+    {
+        float cos     = (float) Math.cos(radians);
+        float sin     = (float) Math.sin(radians);
+        Vector3 scale = getScale();
+        this.col1 = new Vector3(cos * scale.x(),  sin * scale.x(), 0.0F);
+        this.col2 = new Vector3(-sin * scale.y(), cos * scale.y(), 0.0F);
+    }
+
+    public void setScale(float sx, float sy, float sz)
+    {
+        float lenX = new Vector3(this.col1.x(), this.col1.y(), this.col1.z()).magnitude();
+        float lenY = new Vector3(this.col2.x(), this.col2.y(), this.col2.z()).magnitude();
+        float lenZ = new Vector3(this.col3.x(), this.col3.y(), this.col3.z()).magnitude();
+        if (lenX != 0.0F) { this.col1 = new Vector3(this.col1.x() / lenX * sx, this.col1.y() / lenX * sx, this.col1.z() / lenX * sx); }
+        if (lenY != 0.0F) { this.col2 = new Vector3(this.col2.x() / lenY * sy, this.col2.y() / lenY * sy, this.col2.z() / lenY * sy); }
+        if (lenZ != 0.0F) { this.col3 = new Vector3(this.col3.x() / lenZ * sz, this.col3.y() / lenZ * sz, this.col3.z() / lenZ * sz); }
+    }
+
+    public Vector3 getScale()
+    {
+        return new Vector3(
+                new Vector3(this.col1.x(), this.col1.y(), this.col1.z()).magnitude(),
+                new Vector3(this.col2.x(), this.col2.y(), this.col2.z()).magnitude(),
+                new Vector3(this.col3.x(), this.col3.y(), this.col3.z()).magnitude()
+        );
+    }
+
     public Vector3 getColumn(int index)
     {
         return switch (index)

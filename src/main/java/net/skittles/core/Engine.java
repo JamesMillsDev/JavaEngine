@@ -1,7 +1,7 @@
 package net.skittles.core;
 
-import net.skittles.core.utility.Config;
-import net.skittles.core.utility.Version;
+import net.skittles.utility.Config;
+import net.skittles.utility.Version;
 
 import java.util.logging.Logger;
 

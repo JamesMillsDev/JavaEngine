@@ -15,14 +15,23 @@ public class Vector2
 
     public Vector2()
     {
-        this.x = 0.0F;
-        this.y = 0.0F;
+        this(0F, 0F);
     }
 
     public Vector2(float x, float y)
     {
         this.x = x;
         this.y = y;
+    }
+
+    public Vector2(Vector3 v)
+    {
+        this(v.x(), v.y());
+    }
+
+    public Vector2(Vector4 v)
+    {
+        this(v.x(), v.y());
     }
 
     public float x()
