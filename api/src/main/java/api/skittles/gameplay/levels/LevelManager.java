@@ -6,6 +6,7 @@ import api.skittles.utility.Pair;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class LevelManager
 {
@@ -28,9 +29,9 @@ public class LevelManager
         activeLevel.onLoaded();
     }
 
-    public void load(Level level, String id)
+    public void load(Supplier<Level> level, String id)
     {
-        levels.put(id, level);
+        levels.put(id, level.get());
     }
 
     public void tick(float dt)
@@ -40,17 +41,19 @@ public class LevelManager
             return;
         }
 
-        for(Pair<Actor, Consumer<Actor>> destructions : this.activeLevel.pendingActions)
+        for(Pair<Actor, Consumer<Actor>> actorChange : this.activeLevel.pendingActorChanges)
         {
-            destructions.second.accept(destructions.first);
+            actorChange.second.accept(actorChange.first);
         }
 
-        this.activeLevel.pendingActions.clear();
+        this.activeLevel.pendingActorChanges.clear();
         this.activeLevel.root.tick(dt);
+        this.activeLevel.tickActors(dt);
     }
 
     public void render()
     {
         this.activeLevel.render();
+        this.activeLevel.renderActors();
     }
 }

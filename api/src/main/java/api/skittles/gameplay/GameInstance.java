@@ -2,7 +2,7 @@ package api.skittles.gameplay;
 
 import api.skittles.gameplay.levels.LevelManager;
 
-public class GameInstance
+public abstract class GameInstance
 {
     protected final LevelManager levelManager;
 
@@ -11,23 +11,16 @@ public class GameInstance
         levelManager = new LevelManager();
     }
 
-    public void init()
+    public abstract void init();
+
+    public abstract void tick(float dt);
+
+    public abstract void render();
+
+    public abstract void shutdown();
+
+    public LevelManager getLevelManager()
     {
-
-    }
-
-    public void tick(float dt)
-    {
-
-    }
-
-    public void render()
-    {
-
-    }
-
-    public void shutdown()
-    {
-
+        return this.levelManager;
     }
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-public class ActorTransform implements Iterable<ActorTransform>
+public final class ActorTransform implements Iterable<ActorTransform>
 {
     private final Actor owner;
     private Matrix4 transform;
@@ -291,7 +291,7 @@ public class ActorTransform implements Iterable<ActorTransform>
                 "Scale: " + this.scale() + '\n';
     }
 
-    void applyChildListChanges()
+    public void applyChildListChanges()
     {
         for (Pair<ActorTransform, Consumer<ActorTransform>> change : this.childListChanges)
         {

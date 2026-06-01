@@ -48,11 +48,16 @@ public class Application
 
         while(!this.window.shouldClose())
         {
-            gameInstance.tick(0);
+            // TODO: make deltaTime
+            float dt = 0;
+
+            this.gameInstance.tick(dt);
+            this.gameInstance.getLevelManager().tick(dt);
 
             this.window.beginFrame();
 
-            gameInstance.render();
+            this.gameInstance.render();
+            this.gameInstance.getLevelManager().render();
 
             this.window.endFrame();
         }
