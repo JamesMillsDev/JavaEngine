@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class Config
 {
@@ -28,7 +29,7 @@ public class Config
         }
         catch (IOException e)
         {
-            Engine.logger.print(e.getMessage());
+            Engine.logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
@@ -77,9 +78,9 @@ public class Config
         {
             if (map.containsKey(s))
             {
-                if (map.get(s) instanceof Map subMap)
+                if (map.get(s) instanceof Map<?, ?> subMap)
                 {
-                    map = subMap;
+                    map = castStringMap(subMap);
                 }
                 else
                 {
@@ -93,5 +94,11 @@ public class Config
         }
 
         return object;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> castStringMap(Map<?, ?> map)
+    {
+        return (Map<String, Object>) map;
     }
 }

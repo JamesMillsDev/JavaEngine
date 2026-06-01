@@ -8,7 +8,6 @@ plugins {
 group = "net.skittles"
 version = "1.0-SNAPSHOT"
 
-// Detect the current platform for LWJGL natives
 val lwjglVersion = "3.3.4"
 val lwjglNatives = when {
     OperatingSystem.current().isWindows -> "natives-windows"
@@ -21,42 +20,45 @@ repositories {
 }
 
 dependencies {
-    // LWJGL BOM — pins all module versions
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
-    // Core modules — add/remove as needed
     implementation("org.lwjgl", "lwjgl")
-    implementation("org.lwjgl", "lwjgl-glfw")       // windowing & input
-    implementation("org.lwjgl", "lwjgl-opengl")     // OpenGL
-    implementation("org.lwjgl", "lwjgl-stb")        // image loading, fonts, etc.
-    implementation("org.yaml:snakeyaml:2.2")
+    implementation("org.lwjgl", "lwjgl-glfw")
+    implementation("org.lwjgl", "lwjgl-opengl")
+    implementation("org.lwjgl", "lwjgl-stb")
 
-    // Natives for the current platform
     runtimeOnly("org.lwjgl", "lwjgl",        classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-glfw",   classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
     runtimeOnly("org.lwjgl", "lwjgl-stb",    classifier = lwjglNatives)
 
-    // Tests
+    implementation("org.yaml:snakeyaml:2.2")
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
-application {
-    // Change this to your actual main class
-    mainClass.set("net.skittles.Main")
+val jvmArgs = buildList {
+    add("--enable-native-access=ALL-UNNAMED")
+    add("--add-opens=java.base/java.lang=ALL-UNNAMED")
+    add("--add-opens=java.base/java.nio=ALL-UNNAMED")
+    add("--add-opens=java.base/sun.nio.ch=ALL-UNNAMED")
 
-    // Required on macOS: GLFW must run on the main thread
-    if (OperatingSystem.current().isMacOsX) {
-        applicationDefaultJvmArgs = listOf("-XstartOnFirstThread")
+    if (OperatingSystem.current().isMacOsX)
+    {
+        add("-XstartOnFirstThread")
     }
+}
+
+application {
+    mainClass.set("net.skittles.Main")
+    applicationDefaultJvmArgs = jvmArgs
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 
-// Generate IntelliJ run configuration
 tasks.register("generateIdeaRunConfig") {
     group = "ide"
     description = "Generates an IntelliJ IDEA run configuration"
@@ -66,15 +68,13 @@ tasks.register("generateIdeaRunConfig") {
         runConfigDir.mkdirs()
 
         val mainClassName = application.mainClass.get()
-        val isMac = OperatingSystem.current().isMacOsX
-        val jvmArgs = if (isMac) "-XstartOnFirstThread" else ""
+        val jvmArgsString = jvmArgs.joinToString(" ")
 
-        val configName = "Run ${project.name}"
         val xml = """
             <component name="ProjectRunConfigurationManager">
-              <configuration default="false" name="$configName" type="Application" factoryName="Application">
+              <configuration default="false" name="Run ${project.name}" type="Application" factoryName="Application">
                 <option name="MAIN_CLASS_NAME" value="$mainClassName" />
-                <option name="VM_PARAMETERS" value="$jvmArgs" />
+                <option name="VM_PARAMETERS" value="$jvmArgsString" />
                 <option name="WORKING_DIRECTORY" value="${'$'}PROJECT_DIR${'$'}" />
                 <module name="${project.name}.main" />
                 <method v="2">
@@ -84,7 +84,7 @@ tasks.register("generateIdeaRunConfig") {
             </component>
         """.trimIndent()
 
-        val configFile = file("$runConfigDir/${project.name}.xml")
+        val configFile = file(".idea/runConfigurations/${project.name}.xml")
         configFile.writeText(xml)
         println("Run configuration written to: ${configFile.relativeTo(projectDir)}")
     }
