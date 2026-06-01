@@ -23,7 +23,7 @@ public class Window
         this.width = Engine.config.getValue("Application.Window.Width", Integer.class);
         this.height = Engine.config.getValue("Application.Window.Height", Integer.class);
         this.title = Engine.config.getValue("Application.Title", String.class);
-        this.clrColor = Color.from(Engine.config.getList("Application.Window.ClearColor", Double.class));
+        this.clrColor = Color.fromArraylist(Engine.config.getList("Application.Window.ClearColor", Double.class));
     }
 
     public void open()
