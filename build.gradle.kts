@@ -29,6 +29,7 @@ dependencies {
     implementation("org.lwjgl", "lwjgl-glfw")       // windowing & input
     implementation("org.lwjgl", "lwjgl-opengl")     // OpenGL
     implementation("org.lwjgl", "lwjgl-stb")        // image loading, fonts, etc.
+    implementation("org.yaml:snakeyaml:2.2")
 
     // Natives for the current platform
     runtimeOnly("org.lwjgl", "lwjgl",        classifier = lwjglNatives)

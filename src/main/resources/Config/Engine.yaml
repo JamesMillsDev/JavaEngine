@@ -1,0 +1,7 @@
+Application:
+  Window:
+    Width: 800
+    Height: 600
+    ClearColor: [ 64.0, 64.0, 64.0, 64.0 ]
+  Title: "JE"
+  Version: [ 0, 0, 1 ]
