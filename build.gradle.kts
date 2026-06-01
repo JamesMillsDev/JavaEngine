@@ -89,3 +89,28 @@ tasks.register("generateIdeaRunConfig") {
         println("Run configuration written to: ${configFile.relativeTo(projectDir)}")
     }
 }
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = application.mainClass.get()
+        attributes["Class-Path"] = configurations.runtimeClasspath.get()
+            .joinToString(" ") { it.name }
+    }
+}
+
+tasks.register<Copy>("copyDependencies") {
+    group = "build"
+    description = "Copies all runtime dependencies to build/libs"
+    from(configurations.runtimeClasspath)
+    into(layout.buildDirectory.dir("libs"))
+}
+
+tasks.register("buildExecutable") {
+    group = "build"
+    description = "Builds the jar and copies all dependencies to build/libs"
+    dependsOn(tasks.jar, "copyDependencies")
+
+    doLast {
+        println("Executable built to: ${layout.buildDirectory.dir("libs").get()}")
+    }
+}
